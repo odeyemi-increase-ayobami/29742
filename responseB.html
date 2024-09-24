@@ -1,0 +1,85 @@
+responseA.html<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tower of Hanoi</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+.title {
+    background-color: #8B4513; /* Brown */
+    color: white;
+    padding: 10px 0;
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+}
+
+.game-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+}
+
+.peg {
+    width: 20px;
+    background-color: #8B4513; /* Brown */
+    height: 200px;
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.disk {
+    height: 20px;
+    border-radius: 10px;
+    transition: all 0.3s; /* For a smooth visual effect on hover */
+}
+
+/* Disk colors from largest to smallest */
+.disk:nth-child(1) { background-color: red; width: 180px; }
+.disk:nth-child(2) { background-color: green; width: 140px; }
+.disk:nth-child(3) { background-color: blue; width: 100px; }
+
+.reset-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #8B4513; /* Brown */
+    color: black;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.reset-button:hover {
+    opacity: 0.8;
+}
+</style>
+</head>
+<body>
+
+<div class="title">Tower of Hanoi</div>
+
+<div class="game-container">
+    <div class="peg">
+        <div class="disk"></div>
+        <div class="disk"></div>
+        <div class="disk"></div>
+    </div>
+    <div class="peg"></div>
+    <div class="peg"></div>
+</div>
+
+<button class="reset-button">New Game</button>
+
+</body>
+</html>
