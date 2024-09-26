@@ -1,84 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Tower of Hanoi</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f0f0f0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 50px;
-    }
-    .title {
-        background-color: #8B4513;
-        color: white;
-        padding: 10px 20px;
-        margin-bottom: 20px;
-        font-size: 24px;
-    }
-    .game-area {
-        display: flex;
-        justify-content: space-around;
-        width: 80%;
-        background-color: #fff;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .peg {
-        width: 15px;
-        background-color: #8B4513;
-        height: 200px;
-        position: relative;
-        margin: 0 20px;
-    }
-    .disk {
-        height: 30px;
-        margin: 0 auto;
-        border-radius: 15px;
-        transition: all 0.3s; /* For hover effect */
-    }
-    .disk:hover {
-        opacity: 0.8;
-        cursor: pointer;
-    }
-    #disk1 { width: 150px; background-color: #FF0000; }
-    #disk2 { width: 120px; background-color: #008000; }
-    #disk3 { width: 90px; background-color: #FFA500; }
-    .new-game {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #8B4513;
-        color: black;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    .new-game:hover {
-        background-color: #A0522D;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Visualization</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #solarSystem { width: 100vw; height: 100vh; }
+        .controls { position: absolute; top: 10px; left: 10px; z-index: 1; }
+        .indicator { position: absolute; color: white; text-shadow: 1px 1px 2px black; display: none; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </head>
 <body>
-
-<div class="title">Tower of Hanoi</div>
-
-<div class="game-area">
-    <div class="peg">
-        <div id="disk1" class="disk"></div>
-        <div id="disk2" class="disk"></div>
-        <div id="disk3" class="disk"></div>
+    <div id="solarSystem"></div>
+    <div class="controls">
+        <button onclick="toggleView()">Flat/Side View</button>
+        <button onclick="toggleDisplay()">Whole/Half View</button>
+        <select onchange="selectAttribute(this.value)">
+            <option value="speed">Speed</option>
+            <option value="size">Size</option>
+            <option value="distance">Distance</option>
+        </select>
     </div>
-    <div class="peg"></div>
-    <div class="peg"></div>
-    <div class="peg"></div>
-    <div class="peg"></div>
-    <div class="peg"></div>
-</div>
+    <div class="indicator" id="planetIndicator"></div>
 
-<button class="new-game">New Game</button>
+    <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('solarSystem').appendChild(renderer.domElement);
 
+    // Planets data and creation would go here
+    const planets = [];
+    
+    function init() {
+        // Add Sun, planets, orbits, and stars background
+        // Example for sun
+        const sunGeometry = new THREE.SphereGeometry(1, 32, 32);
+        const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+        scene.add(sun);
+
+        // Function to animate and handle toggles
+        function animate() {
+            requestAnimationFrame(animate);
+            TWEEN.update(); // Update tweens for smooth transitions
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resizing
+        window.addEventListener('resize', onWindowResize, false);
+    }
+
+    function toggleView() {
+        // Logic to switch between flat and side view
+        new TWEEN.Tween(camera.position)
+            .to({x: 0, y: view === 'flat' ? 10 : 0, z: view === 'flat' ? 0 : 10}, 1000)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
+    }
+
+    function selectAttribute(attr) {
+        // Show indicators for selected attribute
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    init();
+    </script>
 </body>
 </html>

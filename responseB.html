@@ -1,85 +1,119 @@
-responseA.html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tower of Hanoi</title>
+<title>Solar System Visualization</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f0f0f0;
-}
-
-.title {
-    background-color: #8B4513; /* Brown */
-    color: white;
-    padding: 10px 0;
-    width: 100%;
-    text-align: center;
-    font-size: 24px;
-}
-
-.game-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-around;
-    width: 80%;
-}
-
-.peg {
-    width: 20px;
-    background-color: #8B4513; /* Brown */
-    height: 200px;
-    position: relative;
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
-}
-
-.disk {
-    height: 20px;
-    border-radius: 10px;
-    transition: all 0.3s; /* For a smooth visual effect on hover */
-}
-
-/* Disk colors from largest to smallest */
-.disk:nth-child(1) { background-color: red; width: 180px; }
-.disk:nth-child(2) { background-color: green; width: 140px; }
-.disk:nth-child(3) { background-color: blue; width: 100px; }
-
-.reset-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #8B4513; /* Brown */
-    color: black;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.reset-button:hover {
-    opacity: 0.8;
+body { background: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; overflow-x: hidden; }
+#solar-system { position: relative; width: 100%; height: 80vh; margin: auto; }
+.planet, #sun { position: absolute; border-radius: 50%; }
+#controls { padding: 10px; text-align: center; }
+button, .toggle { margin: 5px; padding: 5px 10px; cursor: pointer; }
+.view-toggle, .info-toggle { display: inline-block; }
+#planet-info { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 10px; display: none; }
+.orbit { position: absolute; border: 1px dashed white; border-radius: 50%; }
+@media (max-width: 768px) {
+    #controls { position: fixed; bottom: 0; background: #000; width: 100%; z-index: 10; }
+    .toggle { display: block; }
 }
 </style>
 </head>
 <body>
-
-<div class="title">Tower of Hanoi</div>
-
-<div class="game-container">
-    <div class="peg">
-        <div class="disk"></div>
-        <div class="disk"></div>
-        <div class="disk"></div>
-    </div>
-    <div class="peg"></div>
-    <div class="peg"></div>
+<div id="solar-system">
+    <div id="sun"></div>
+    <!-- Planets and their orbits will be dynamically added here -->
 </div>
+<div id="controls">
+    <div class="view-toggle">
+        <button onclick="toggleView('flat')">Flat View</button>
+        <button onclick="toggleView('side')">Side View</button>
+        <button onclick="toggleView('whole')">Whole View</button>
+        <button onclick="toggleView('half')">Half View</button>
+    </div>
+    <div class="info-toggle">
+        <button onclick="toggleInfo('speed')">Speed</button>
+        <button onclick="toggleInfo('size')">Size</button>
+        <button onclick="toggleInfo('distance')">Distance</button>
+    </div>
+</div>
+<div id="planet-info"></div>
 
-<button class="reset-button">New Game</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<script>
+const planetsData = [
+    {name: 'Mercury', size: 0.383, distance: 0.387, speed: 47.4, color: '#8c8c8c'},
+    {name: 'Venus', size: 0.949, distance: 0.723, speed: 35.0, color: '#e8cda2'},
+    {name: 'Earth', size: 1, distance: 1, speed: 29.8, color: '#1f77b4'},
+    // Add other planets similarly
+];
 
+let currentView = 'flat';
+let currentInfo = 'size';
+
+function createSolarSystem() {
+    const solarSystem = document.getElementById('solar-system');
+    const sun = document.getElementById('sun');
+    sun.style.width = sun.style.height = '30px';
+    sun.style.backgroundColor = 'yellow';
+
+    planetsData.forEach((planet, index) => {
+        const orbit = document.createElement('div');
+        orbit.className = 'orbit';
+        const planetDiv = document.createElement('div');
+        planetDiv.className = 'planet';
+        planetDiv.style.backgroundColor = planet.color;
+        planetDiv.dataset.name = planet.name;
+        solarSystem.appendChild(orbit);
+        solarSystem.appendChild(planetDiv);
+        
+        planetDiv.onclick = () => showPlanetInfo(planet);
+    });
+    updateView();
+}
+
+function updateView() {
+    const solarSystem = document.getElementById('solar-system');
+    const scale = currentView === 'half' ? 0.5 : 1;
+    planetsData.forEach((planet, index) => {
+        const planetDiv = solarSystem.children[index * 2 + 2]; // Skipping the sun and orbits
+        const orbit = solarSystem.children[index * 2 + 1];
+        const distanceScale = planet.distance * 100 * scale;
+        const sizeScale = planet.size * 10 * scale;
+        
+        if(currentView === 'side') {
+            planetDiv.style.bottom = `${distanceScale}px`;
+            planetDiv.style.left = `${index * 50}px`;
+        } else {
+            planetDiv.style.left = `${distanceScale}px`;
+            planetDiv.style.top = '50%';
+            planetDiv.style.transform = 'translate(-50%, -50%)';
+        }
+        
+        planetDiv.style.width = planetDiv.style.height = `${sizeScale}px`;
+        orbit.style.width = orbit.style.height = `${distanceScale * 2}px`;
+        orbit.style.left = orbit.style.top = `${-distanceScale}px`;
+    });
+}
+
+function toggleView(view) {
+    currentView = view;
+    updateView();
+}
+
+function toggleInfo(info) {
+    currentInfo = info;
+    // Here you would update the visualization to reflect the selected info
+}
+
+function showPlanetInfo(planet) {
+    const infoDiv = document.getElementById('planet-info');
+    infoDiv.style.display = 'block';
+    infoDiv.innerHTML = `<p>${planet.name}: ${currentInfo} - ${planet[currentInfo]}</p>`;
+    // Add animation for highlighting the selected attribute
+}
+
+createSolarSystem();
+</script>
 </body>
 </html>
